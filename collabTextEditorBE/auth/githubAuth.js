@@ -13,7 +13,7 @@ passport.use(
       clientID: githubClientId,
       clientSecret: githubClientSecret,
       callbackURL: process.env.GITHUB_CALLBACK,
-      // scope: ["user:email"], 
+      scope: ["gist"], 
     },
     async function (accessToken, refreshToken, profile, done) {
       try {
@@ -21,15 +21,11 @@ passport.use(
         if (!user) {
           user = new User({
             githubId: profile.id,
-            username: profile.username,
-            email: profile.email || ''            
+            username: profile.username            
           });
-          await user.save();
-          let newUser = true;
-          return done(null, { user, accessToken, refreshToken, newUser});  
-        }else{
-          return done(null, { user, accessToken, refreshToken});
+          await user.save();                    
         }
+        return done(null, { user, accessToken, refreshToken});        
       } catch (err) {
         return done(err);
       }

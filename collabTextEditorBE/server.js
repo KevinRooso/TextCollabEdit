@@ -2,9 +2,15 @@ const express = require('express');
 require('dotenv').config();
 const mongoose = require('mongoose');
 const passport = require('./auth/githubAuth');
+const cors = require('cors');
 const User = require('./models/user');
+const authController = require('./controller/authController');
 
 const app = express();
+// Middleware to parse json
+app.use(express.json());
+// Middleware to enable cors
+app.use(cors());
 
 // DB Connection
 mongoose.connect(process.env.MONGO_URI).then(()=> console.log('Connected to MongoDB'))
@@ -14,24 +20,16 @@ mongoose.connect(process.env.MONGO_URI).then(()=> console.log('Connected to Mong
 app.use(passport.initialize());
 
 // GitHub OAuth Login Route
-app.get('/auth/github', (req, res) => {
-    passport.authenticate('github')(req, res);
-});
+app.get('/auth/github',authController.authenticate);
 
 // OAuth Callback Route
-app.get('/auth/github/callback',
-    passport.authenticate('github', { failureRedirect: '/',session: false }),
-    (req, res) => {
-        const { user, accessToken, refreshToken } = req.user;       
-        const redirectUrl = `${process.env.REACT_URL}/dashboard?user=${encodeURIComponent(JSON.stringify({
-            id: user._id,
-            username: user.username,
-            email: user.email,
-            newUser: user.newUser
-        }))}&accessToken=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}`;
-        res.redirect(redirectUrl);
-    }
-)
+app.get('/auth/github/callback',authController.authcallback)
+
+// Update User Route
+app.put('/api/user/:userId', authController.updateUser);
+
+// Get User Details
+app.get('/api/user/:userId', authController.getUserDetails);
 
 // Server Test Running
 app.get('/', (req, res) => {

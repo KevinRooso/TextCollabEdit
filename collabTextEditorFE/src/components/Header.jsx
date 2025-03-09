@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 const Header = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.clear(); // Clear local storage
-    navigate("/"); // Navigate to login page
+  const handleLogout = () => {       
+      localStorage.clear(); // Clear local storage
+      navigate("/"); // Navigate to login page  
   };
 
   return (

@@ -55,9 +55,22 @@ const getUserDetails = async (req,res) => {
     }
 }
 
+const getUsers = async (req,res) => {
+    try {
+        const users = await User.find();
+        if(users.length == 0){
+            return res.status(404).json({message: 'No Users found'});
+        }
+        res.status(200).json(users);
+    } catch (error) {
+        return { error: "Error fetching users" };
+    }
+}
+
 module.exports = {    
     authenticate,
     authcallback,
     updateUser,
-    getUserDetails
+    getUserDetails,
+    getUsers
 }

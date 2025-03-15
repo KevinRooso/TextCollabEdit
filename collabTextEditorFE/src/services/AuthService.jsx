@@ -1,4 +1,5 @@
 import axiosInstance from "../guards/InterceptorConfig";
+import { arrayBufferToBase64, base64ToPem, base64ToPemPrivateKey } from "./HelperService";
 
 export const generateRSAKeyPair = async () => {
     const { publicKey, privateKey } = await window.crypto.subtle.generateKey(
@@ -12,20 +13,25 @@ export const generateRSAKeyPair = async () => {
       ["encrypt", "decrypt"]
     );
   
-    // Export the keys
+    // Export the keys (spki and pkcs8 are standard syntax for pub and private key storage)
     const exportedPublicKey = await window.crypto.subtle.exportKey("spki", publicKey);
     const exportedPrivateKey = await window.crypto.subtle.exportKey("pkcs8", privateKey);
   
     return { publicKey: exportedPublicKey, privateKey: exportedPrivateKey };
 };
 
-export const savePrivateKey = (privateKey) => {
-    const keyArray = new Uint8Array(privateKey)
-    const blob = new Blob([keyArray], { type: "application/octet-stream" });
+export const savePrivateKey = (privateKey) => {    
+    const base64PrivateKey = arrayBufferToBase64(privateKey);
+    const pemPrivateKey = base64ToPemPrivateKey(base64PrivateKey); 
+
+    const blob = new Blob([pemPrivateKey], { type: "application/octet-stream" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "textcollabedit-private-key.txt";
+    link.download = "textcollabedit-private-key.pem";
     link.click();
+
+    // Save private key in localStorage
+    localStorage.setItem("privateKey", pemPrivateKey); 
 }
 
 export const createGist = async(accessToken,publicKey) => {
@@ -76,7 +82,7 @@ export const updateUser = (userId, publicKey, gistUrl) => {
             "authenticated": true
         }
         const response = axiosInstance.put(`/api/user/${userId}`, body);
-        if (response.data.success) {
+        if (response.success) {
             console.log("User updated successfully!");
         }
     }catch(error){
@@ -95,21 +101,13 @@ export const getUserDetails = async(userId) => {
       
 }
 
-// RSA keys are generated in Array Buffer, convert to readable Base64 format
-const arrayBufferToBase64 = (arrayBuffer) => {
-    let binary = '';
-    const bytes = new Uint8Array(arrayBuffer);
-    const length = bytes.byteLength;
-    for (let i = 0; i < length; i++) {
-      binary += String.fromCharCode(bytes[i]);
+export const getAllUsers = async() => {
+   try{
+        const response = await axiosInstance.get(`/api/users`);
+        const users = response.data;
+        return users
+    }catch(error){
+        console.error("Error getting user details:", error);
     }
-    return window.btoa(binary);
-};
+}
 
-// Convert Base64 to PEM format 
-export const base64ToPem = (base64Key) => {
-    const pemHeader = "-----BEGIN PUBLIC KEY-----\n";
-    const pemFooter = "\n-----END PUBLIC KEY-----";
-    const key = base64Key.match(/.{1,64}/g).join("\n"); // Split into lines of 64 characters
-    return pemHeader + key + pemFooter;
-};

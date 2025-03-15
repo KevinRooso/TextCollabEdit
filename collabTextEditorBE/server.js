@@ -5,6 +5,7 @@ const passport = require('./auth/githubAuth');
 const cors = require('cors');
 const User = require('./models/user');
 const authController = require('./controller/authController');
+const documentController = require('./controller/documentController');
 
 const app = express();
 // Middleware to parse json
@@ -25,11 +26,17 @@ app.get('/auth/github',authController.authenticate);
 // OAuth Callback Route
 app.get('/auth/github/callback',authController.authcallback)
 
-// Update User Route
-app.put('/api/user/:userId', authController.updateUser);
+// User Api Routes
+app.get('/api/users',authController.getUsers); // Get All users
+app.put('/api/user/:userId', authController.updateUser); // Update a user
+app.get('/api/user/:userId', authController.getUserDetails); // Get User Details By Id
 
-// Get User Details
-app.get('/api/user/:userId', authController.getUserDetails);
+// Document Api Routes
+app.post('/api/documents', documentController.createDocument); // Create a new document
+app.get('/api/documents/:userId', documentController.getDocumentList); // Get document list for a user
+app.get('/api/document/:documentId', documentController.getDocument); // Get details of a specific document
+app.put('/api/document/:documentId/content', documentController.updateDocumentContent); // Update content only
+app.put('/api/document/:documentId', documentController.updateDocumentContentAndCollaborators); // Update content and collaborators
 
 // Server Test Running
 app.get('/', (req, res) => {

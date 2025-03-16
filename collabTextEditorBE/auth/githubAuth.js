@@ -6,6 +6,8 @@ const User = require("../models/user");
 const githubClientId = process.env.GITHUB_CLIENT_ID;
 const githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
 
+console.log(process.env.GITHUB_CALLBACK);
+
 // Passport Configure to use Github Strategy
 passport.use(
   new GithubStrategy(

@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: '0.0.0.0', // Allow external access
     port: process.env.PORT || 5173,
     proxy: {
       // Proxy requests starting with /gist to the Gist API
@@ -14,5 +15,8 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/gist/, ''), // remove '/gist' from the beginning of the path
       },
     },
+  },
+  preview: {
+    allowedHosts: ['textcollabedit.onrender.com'],
   },
 });

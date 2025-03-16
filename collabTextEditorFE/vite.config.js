@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: process.env.PORT || 5173,
     proxy: {
       // Proxy requests starting with /gist to the Gist API
       '/gist': {

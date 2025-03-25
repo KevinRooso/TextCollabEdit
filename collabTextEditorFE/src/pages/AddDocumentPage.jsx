@@ -7,6 +7,7 @@ import Modal from 'react-modal'; // Modal component from the library
 import Header from "../components/Header"; // Import the Header component
 
 import { useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const modalStyles = {
   content: {
@@ -58,6 +59,7 @@ const AddDocumentPage = () => {
       setUser(currUser);
     } catch (error) {
       console.error('Error fetching user list:', error);
+      toast.error('Error fetching user list');
     }
   }; 
 
@@ -79,6 +81,7 @@ const AddDocumentPage = () => {
       }
     }catch(error){
       console.error('Error fetching document details:', error);
+      toast.error(`Error fetching document details: ${error}`);
     } 
   }
 
@@ -94,8 +97,8 @@ const AddDocumentPage = () => {
   };
 
   const handleSaveDocument = async () => {
-    if (collaboratorList.length === 0) {
-      alert("Please select at least one collaborator!");
+    if (collaboratorList.length === 0) {      
+      toast.error("Please select at least one collaborator!");
       return;
     }
 
@@ -103,11 +106,12 @@ const AddDocumentPage = () => {
       // Create the document by passing the title, content, userId, and collaborator Ids
       const response = await createDocument(title, content, currentUser, collaboratorList);
       if (response) {
-        alert("Document created successfully!");        
+        toast.success("Document created successfully!");
         navigate('/dashboard')
       }
     } catch (error) {
       console.error("Error saving the document:", error);
+      toast.error("Error saving the document");
     }
   }; 
   
@@ -117,7 +121,7 @@ const AddDocumentPage = () => {
     }else{      
         const response = await updateDocumentContent(document,privateKey,currentUser._id,content);
         if (response) {
-          alert("Document updated successfully!");               
+          toast.success("Document updated successfully!");               
         }
       }
   }    

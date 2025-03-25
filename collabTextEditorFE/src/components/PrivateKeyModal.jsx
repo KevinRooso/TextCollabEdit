@@ -1,6 +1,7 @@
 // PrivateKeyModal.jsx
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+import toast from 'react-hot-toast';
 
 const modalStyles = {
   content: {
@@ -23,6 +24,7 @@ const PrivateKeyModal = ({ isOpen, onRequestClose, onSave }) => {
       // Save private key to localStorage
       localStorage.setItem('privateKey', privateKey);
       onSave(privateKey);  // Notify parent component that key is saved
+      toast.success("Private key loaded");      
     }
   };
 

@@ -4,6 +4,7 @@ import DashboardPage from './pages/DashboardPage';
 import AddDocumentPage from "./pages/AddDocumentPage";
 import { CssBaseline } from '@mui/material';
 import Modal from 'react-modal';
+import {Toaster} from 'react-hot-toast';
 
 function App() {
   Modal.setAppElement('#root');
@@ -19,6 +20,7 @@ function App() {
 
           </Routes>        
       </BrowserRouter>
+      <Toaster />
     </>
   );
 }

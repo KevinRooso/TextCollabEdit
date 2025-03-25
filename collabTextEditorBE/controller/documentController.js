@@ -60,7 +60,7 @@ const getDocument = async (req, res) => {
 
 const updateDocumentContent = async (req, res) => {
   const { documentId } = req.params;  // Document ID from URL parameter
-  const { content } = req.body;  // Content and IV data to update
+  const { content, iv } = req.body;  // Content and IV data to update
 
   try {
     // Find the document by its ID
@@ -71,9 +71,10 @@ const updateDocumentContent = async (req, res) => {
       return res.status(404).json({ message: 'Document not found' });
     }
 
-    // Update only the content and updated date
+    // Update only the content, updated date and iv
     document.content = content || document.content;  // Update content if provided    
     document.updatedAt = Date.now();  // Update the updatedAt field
+    document.iv = iv; // Update the IV
 
     // Save the updated document
     await document.save();

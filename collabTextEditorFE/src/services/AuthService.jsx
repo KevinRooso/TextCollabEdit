@@ -78,8 +78,7 @@ export const updateUser = (userId, publicKey, gistUrl) => {
         const pemPublicKey = base64ToPem(base64PublicKey);
         let body = {
             "publicKey": pemPublicKey,
-            "gistUrl": gistUrl,
-            "authenticated": true
+            "gistUrl": gistUrl
         }
         const response = axiosInstance.put(`/api/user/${userId}`, body);
         if (response.success) {

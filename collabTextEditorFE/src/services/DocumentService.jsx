@@ -69,13 +69,16 @@ export const fetchDocumentDetails = async (docId) => {
 // Update Document Content
 export const updateDocumentContent = async (documentDetails,privateKey,currentUserId,content) => {
   try {
+    // Generate a new IV for the updated content
+    const iv = window.crypto.getRandomValues(new Uint8Array(12));  // New IV    
     // Decrypt the AES key and IV from document details
-    const {aesKey, iv} = await getAesKeyIv(documentDetails,privateKey,currentUserId);
+    const {aesKey} = await getAesKeyIv(documentDetails,privateKey,currentUserId);
     // Encrypt the content using AES
     const encryptedContent = await encryptContentWithAES(content, aesKey, iv);
     // Update Document Content API
     const response = await axiosInstance.put(`/api/document/${documentDetails._id}/content`,{
-      content: encryptedContent
+      content: encryptedContent,
+      iv: arrayBufferToBase64(iv)
     });
     return response.data;
   } catch (error) {

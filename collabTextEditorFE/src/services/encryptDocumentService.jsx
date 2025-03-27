@@ -22,6 +22,7 @@ export const encryptAESKeyWithRSA = async (gistUrl, aesKey) => {
     const publicKeyPem = await verifyAndGetRSAPublicKey(gistUrl);
     const publicKey = pemToArrayBuffer(publicKeyPem,'public');
 
+    // Converts the array buffer to Crypto Key object
     const importedPublicKey = await window.crypto.subtle.importKey(
       'spki',
       publicKey,  // The public key of the collaborator converted back to Array buffer
@@ -36,6 +37,7 @@ export const encryptAESKeyWithRSA = async (gistUrl, aesKey) => {
     // Export the AES key as an ArrayBuffer before encryption
     const aesKeyArrayBuffer = await window.crypto.subtle.exportKey('raw', aesKey);
   
+    // The array buffer aes key is encrypted with RSA pub key in Crypto key format
     const encryptedKey = await window.crypto.subtle.encrypt(
       { name: 'RSA-OAEP' },
       importedPublicKey,

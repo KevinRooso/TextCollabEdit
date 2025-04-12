@@ -1,8 +1,16 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const LoginPage = () => {
+  
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if(localStorage.getItem('token')){
+      navigate('/dashboard')
+    }
+  },[])
 
   const handleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}auth/github`;

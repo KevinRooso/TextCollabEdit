@@ -17,17 +17,20 @@ const DashboardPage = () => {
       checkPrivateKey();  // Check for private key on load     
     }else{
       const urlParams = new URLSearchParams(window.location.search);
-      const userFromParams = JSON.parse(urlParams.get("user"));  
+      const userFromParams = JSON.parse(urlParams.get("user"));
       const accessToken = urlParams.get("accessToken");
-  
-      if (!accessToken || !userFromParams) {
+
+      const jwtToken = urlParams.get("jwtToken");
+
+      if (!jwtToken || !accessToken || !userFromParams) {
         navigate("/");
         return;
       }
-  
-      localStorage.setItem("token", accessToken);   
+
+      localStorage.setItem("token", jwtToken); // Used in API requests
+      localStorage.setItem("accessToken", accessToken); // Used for GitHub Gist      
       setLoggedIn(true);
-      getUser(userFromParams,accessToken);
+      getUser(userFromParams, accessToken);
     }    
   }, []);
 

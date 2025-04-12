@@ -2,6 +2,7 @@ const passport = require('../auth/githubAuth');
 const axios = require('axios');
 const User = require("../models/user");
 
+
 const authenticate = async(req,res) =>{
     passport.authenticate('github')(req, res);
 }
@@ -9,10 +10,13 @@ const authenticate = async(req,res) =>{
 const authcallback = async(req,res)=>{
     passport.authenticate('github', { failureRedirect: '/',session: false })(req, res, () => {            
             const { user, accessToken, refreshToken } = req.user;  
+
+            const jwtToken = require('../utils/jwt').generateToken({ id: user._id, username: user.username });
+
             const redirectUrl = `${process.env.REACT_URL}/dashboard?user=${encodeURIComponent(JSON.stringify({
                 id: user._id,
                 username: user.username,                
-            }))}&accessToken=${encodeURIComponent(accessToken)}&refreshToken=${encodeURIComponent(refreshToken)}`;
+            }))}&accessToken=${encodeURIComponent(accessToken)}&jwtToken=${encodeURIComponent(jwtToken)}`;
             res.redirect(redirectUrl);
         });
 }

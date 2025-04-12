@@ -6,6 +6,8 @@ const cors = require('cors');
 const User = require('./models/user');
 const authController = require('./controller/authController');
 const documentController = require('./controller/documentController');
+const authenticateJWT = require('./middleware/authMiddleware');
+
 
 const app = express();
 // Middleware to parse json
@@ -25,6 +27,8 @@ app.get('/auth/github',authController.authenticate);
 
 // OAuth Callback Route
 app.get('/auth/github/callback',authController.authcallback)
+
+app.use('/api', authenticateJWT);
 
 // User Api Routes
 app.get('/api/users',authController.getUsers); // Get All users

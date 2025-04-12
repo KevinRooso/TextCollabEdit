@@ -7,7 +7,7 @@ const User = require('./models/user');
 const authController = require('./controller/authController');
 const documentController = require('./controller/documentController');
 const authenticateJWT = require('./middleware/authMiddleware');
-
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 // Middleware to parse json
@@ -18,6 +18,17 @@ app.use(cors());
 // DB Connection
 mongoose.connect(process.env.MONGO_URI).then(()=> console.log('Connected to MongoDB'))
 .catch(err => console.log("MongoDB Connection Error",err));
+
+// Rate Limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 20, // Limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.',
+    headers: true,
+  });
+
+// Limiter
+app.use(limiter)
 
 // Set up OAuth
 app.use(passport.initialize());
